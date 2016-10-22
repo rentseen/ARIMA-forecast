@@ -8,10 +8,13 @@ from statsmodels.graphics.api import qqplot
 from matplotlib.pylab import rcParams
 from statsmodels.tsa.arima_model import ARIMA
 import random
+import math
 
 VM_RANGE=15
 PM_NUMBER=20
 U_MEAN=0.075
+SLICE_NUMBER=20
+RAND_RANGE=0.6
 
 def arimaPredict(originData):
 	#log
@@ -26,8 +29,12 @@ def arimaPredict(originData):
 
 def generateU():
 	#random
-	a=[random.randrange(0,100),2,1,2,3,2,1,2,3,2,1]
-	return a
+	x=[]
+	base=random.randrange(0,6)
+	for t in range(SLICE_NUMBER):
+		tmp=(math.sin(base+t)+1+RAND_RANGE*random.random())*0.0577
+		x.append(tmp)
+	return x
 
 
 class VM:
@@ -87,6 +94,8 @@ for i in range(4):
 	print()
 '''
 
+
+'''
 #Init rack
 rack=[]
 for i in range(64):
@@ -118,3 +127,10 @@ for i in range(64):
 
 #Init epsilon
 epsilon=8
+'''
+x=generateU()
+print(x)
+originData=pd.Series(x)
+originData.index = pd.Index(sm.tsa.datetools.dates_from_range('2001','2020'))
+plt.plot(originData)
+plt.show()
