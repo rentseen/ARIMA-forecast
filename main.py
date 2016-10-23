@@ -7,24 +7,63 @@ import statsmodels.api as sm
 from statsmodels.graphics.api import qqplot
 from statsmodels.tsa.arima_model import ARIMA
 from matplotlib.pylab import rcParams
-import time
+import random
+import math
+#ACF and PACF plots:
+from statsmodels.tsa.stattools import acf, pacf
 
-start = time.time()
+RAND_RANGE=0.6
+SLICE_NUMBER=20
+
+def generateU():
+	#random
+	x=[]
+	base=random.randrange(0,6)
+	for t in range(SLICE_NUMBER):
+		tmp=(math.sin(base+t)+1+RAND_RANGE*random.random())*0.0577
+		x.append(tmp)
+	return x
+
 rcParams['figure.figsize'] = 15, 8
 
-originData=[10930,10318,10595,10972,7706,6756,9092,10551,9722,10913,11151,8186,6422,6337,11649,11652,10310,12043,7937,6476,9662,9570,9981,9331,9449,6773,6304,9355,10477,10148,10395,11261,8713,7299,10424,10795,11069,11602,11427,9095,7707,10767,12136,12812,12006,12528,10329,7818,11719,11683,12603,11495,13670,11337,10232,13261,13230,15535,16837,19598,14823,11622,19391,18177,19994,14723,15694,13248,9543,12872,13101,15053,12619,13749,10228,9725,14729,12518,14564,15085,14722,11999,9390,13481,14795,15845,15271,14686,11054,10395]
-
+originData=generateU()
 #origin data
 originData=pd.Series(originData)
-originData.index = pd.Index(sm.tsa.datetools.dates_from_range('2001','2090'))
+originData.index = pd.Index(sm.tsa.datetools.dates_from_range('2001','2020'))
 
 #log data, filter the extremum
 logData=np.log(originData)
 
 #diff data
-diffData= logData.diff(1)
+diffData= logData
 diffData.dropna(inplace=True)
 
+print(diffData)
+
+'''
+lag_acf = acf(diffData, nlags=SLICE_NUMBER-2)
+lag_pacf = pacf(diffData, nlags=SLICE_NUMBER-2, method='ols')
+
+#Plot ACF: 
+#q - The lag value where the ACF chart crosses the upper confidence interval for the first time
+plt.subplot(211) 
+plt.plot(lag_acf)
+plt.axhline(y=0,linestyle='--',color='gray')
+plt.axhline(y=-1.96/np.sqrt(len(diffData)),linestyle='--',color='gray')
+plt.axhline(y=1.96/np.sqrt(len(diffData)),linestyle='--',color='gray')
+plt.title('Autocorrelation Function')
+
+#Plot PACF:
+#p - The lag value where the PACF chart crosses the upper confidence interval for the first time
+plt.subplot(212)
+plt.plot(lag_pacf)
+plt.axhline(y=0,linestyle='--',color='gray')
+plt.axhline(y=-1.96/np.sqrt(len(diffData)),linestyle='--',color='gray')
+plt.axhline(y=1.96/np.sqrt(len(diffData)),linestyle='--',color='gray')
+plt.title('Partial Autocorrelation Function')
+plt.tight_layout()
+plt.show()
+'''
 
 #select p,q
 '''
@@ -33,12 +72,12 @@ fig = plt.figure(figsize=(12,8))
 ax1=fig.add_subplot(211)
 #acf diagram, 
 #q - The lag value where the ACF chart crosses the upper confidence interval for the first time
-fig = sm.graphics.tsa.plot_acf(diffData,lags=40,ax=ax1)
+fig = sm.graphics.tsa.plot_acf(diffData,lags=15,ax=ax1)
 #2 rows 1 column: subplot 2
 ax2 = fig.add_subplot(212)
 #pacf
 #p - The lag value where the PACF chart crosses the upper confidence interval for the first time
-fig = sm.graphics.tsa.plot_pacf(diffData,lags=40,ax=ax2)
+fig = sm.graphics.tsa.plot_pacf(diffData,lags=15,ax=ax2)
 fig.show()
 tmp=input()
 '''
@@ -46,12 +85,17 @@ tmp=input()
 
 #fit
 
-model = ARIMA(logData, order=(7, 1, 3))
+model = ARIMA(logData, order=(3, 0, 1))
 results_ARIMA = model.fit(disp=-1)
-test=results_ARIMA.predict('2091', '2091', dynamic=True)
-print(test)
-end = time.time()
-print(end-start)
+test=results_ARIMA.predict('2021', '2021', dynamic=True)
+
+result=logData.head(1)
+result=result.append(results_ARIMA.fittedvalues)
+plt.plot(logData)
+plt.plot(result, color='red')
+plt.plot(test, color='black')
+plt.show()
+
 #print(results_ARIMA.aic,results_ARIMA.bic,results_ARIMA.hqic)
 
 
