@@ -24,6 +24,9 @@ y=x[:100]
 for i in range(100):
 	y[i]=int(y[i])
 y.sort()
-plt.plot(y)
-plt.show()
-print y
+p=open("sort.txt","w")
+for i in range(100):
+	y[i]=str(y[i])
+for i in range(100):
+	p.write(y[i])
+	p.write("\n")
