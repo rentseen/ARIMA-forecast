@@ -24,9 +24,26 @@ y=x[:100]
 for i in range(100):
 	y[i]=int(y[i])
 y.sort()
-p=open("sort.txt","w")
+'''p=open("sort.txt","w")
 for i in range(100):
 	y[i]=str(y[i])
 for i in range(100):
 	p.write(y[i])
 	p.write("\n")
+'''
+m=[]
+n=[]
+m.append(y[0])
+n.append(1)
+length=0
+for i in range(1,100):
+	if(m[length]==y[i]):
+		n[length]=n[length]+1
+	else:
+		m.append(y[i])
+		n.append(1)
+		length=length+1
+print m
+print n
+plt.plot(m,n)
+plt.show()
