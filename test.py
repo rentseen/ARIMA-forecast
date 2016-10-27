@@ -16,8 +16,14 @@ a.x=-1
 print(a.x)
 print(b[0].x)
 '''
-for i in range(10):
-	print i
-
-print()
-print i
+import matplotlib.pyplot as plt
+f=open("result.txt","r")
+x=f.read()
+x=x.split('\n')
+y=x[:100]
+for i in range(100):
+	y[i]=int(y[i])
+y.sort()
+plt.plot(y)
+plt.show()
+print y

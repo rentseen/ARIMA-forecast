@@ -23,6 +23,7 @@ SLICE_NUMBER=20
 RAND_RANGE=0.6
 P=3
 Q=1
+f=open("result.txt","w")
 
 def arimaPredict(originData):
 	p=P
@@ -51,7 +52,7 @@ def generateU():
 	x=[]
 	base=random.randrange(0,6)
 	for t in range(SLICE_NUMBER):
-		tmp=(math.sin(base+t)+1+RAND_RANGE*random.random())*0.0577
+		tmp=(math.sin(base+t)+1+RAND_RANGE*random.random())*U_MEAN
 		x.append(tmp)
 	return x
 
@@ -140,144 +141,146 @@ p=PM()
 print(p.predict())
 '''
 
-#Init rack
+for i in range(80):
+	#Init rack
 
-rack=[]
-for i in range(64):
-	tmp=Rack(i)
-	rack.append(tmp)
-#rack[0].printU()
+	rack=[]
+	for i in range(64):
+		tmp=Rack(i)
+		rack.append(tmp)
+	#rack[0].printU()
 
-#Init C
-C=[]
-for i in range(64):
-	c=[]
-	for j in range(64):
-		c.append(0)
-	C.append(c)
+	#Init C
+	C=[]
+	for i in range(64):
+		c=[]
+		for j in range(64):
+			c.append(0)
+		C.append(c)
 
-flag=[]
-for i in range(64):
-	flag.append(False)
+	flag=[]
+	for i in range(64):
+		flag.append(False)
 
-for i in range(64):
-	if(flag[i]==False):
-		flag[i]=True
-		while(True):
-			tmp=random.randrange(0,64)
-			if(flag[tmp]==False):
-				flag[tmp]=True
-				C[i][tmp]=1
-				C[tmp][i]=1
-				break
+	for i in range(64):
+		if(flag[i]==False):
+			flag[i]=True
+			while(True):
+				tmp=random.randrange(0,64)
+				if(flag[tmp]==False):
+					flag[tmp]=True
+					C[i][tmp]=1
+					C[tmp][i]=1
+					break
 
-#Init epsilon
-epsilon=8
+	#Init epsilon
+	epsilon=8
 
 
 
-#Init nvm
-nvm=[]
-for i in range(NVM_NUMBER):
-	tmp=NVM()
-	nvm.append(tmp)
-#Sort by u
-nvm.sort(reverse=True)
-'''
-for i in range(NVM_NUMBER):
-	print(nvm[i].u)
-'''
+	#Init nvm
+	nvm=[]
+	for i in range(NVM_NUMBER):
+		tmp=NVM()
+		nvm.append(tmp)
+	#Sort by u
+	nvm.sort(reverse=True)
+	'''
+	for i in range(NVM_NUMBER):
+		print(nvm[i].u)
+	'''
 
-#Group
-flag=[]
-for i in range(NVM_NUMBER):
-	flag.append(False)
+	#Group
+	flag=[]
+	for i in range(NVM_NUMBER):
+		flag.append(False)
 
-l=0
-while(l<NVM_NUMBER):
-	gn=random.randrange(min(3,NVM_NUMBER-l),min(14,NVM_NUMBER-l)+1)
-	g=[]
-	for i in range(gn):
-		x=random.randrange(0,NVM_NUMBER-l)
-		x=x+1
-		count=0
-		pos=0
-		while(count<x):
-			while(flag[pos]):
+	l=0
+	while(l<NVM_NUMBER):
+		gn=random.randrange(min(3,NVM_NUMBER-l),min(14,NVM_NUMBER-l)+1)
+		g=[]
+		for i in range(gn):
+			x=random.randrange(0,NVM_NUMBER-l)
+			x=x+1
+			count=0
+			pos=0
+			while(count<x):
+				while(flag[pos]):
+					pos=pos+1
+				count=count+1
 				pos=pos+1
-			count=count+1
-			pos=pos+1
-		g.append(pos-1)
-		flag[pos-1]=True
-		l=l+1
+			g.append(pos-1)
+			flag[pos-1]=True
+			l=l+1
 
-	for i in range(gn):
-		for j in range(gn):
-			if(i==j):
-				continue
-			nvm[g[i]].addD(g[j])
+		for i in range(gn):
+			for j in range(gn):
+				if(i==j):
+					continue
+				nvm[g[i]].addD(g[j])
 
 
-pmList=[]
-for i in range(64):
-	if(i%10==0):
-		print('i= ',i)
-	for j in range(rack[i].length):
-		pmList.append(rack[i].pm[j])
-		rack[i].pm[j].compLoad()
+	pmList=[]
+	for i in range(64):
+		if(i%10==0):
+			print('i= ',i)
+		for j in range(rack[i].length):
+			pmList.append(rack[i].pm[j])
+			rack[i].pm[j].compLoad()
 
-pmList.sort()
-pmLength=len(pmList)
+	pmList.sort()
+	pmLength=len(pmList)
 
-'''
-for i in range(len(pmList)):
-	print(pmList[i].load)
-'''
+	'''
+	for i in range(len(pmList)):
+		print(pmList[i].load)
+	'''
 
-def ifConnect(i,j):
-	x=pmList[i].father
-	y=pmList[j].father
-	if(x==y):
-		return True
-	if(C[x][y]==1):
-		return True
-	return False
+	def ifConnect(i,j):
+		x=pmList[i].father
+		y=pmList[j].father
+		if(x==y):
+			return True
+		if(C[x][y]==1):
+			return True
+		return False
 
-def ifChangeC(n,p):
-	flag=False
-	for i in range(nvm[n].length):
-		if(nvm[nvm[n].d[i]].p!=-1):
-			if(not ifConnect(nvm[nvm[n].d[i]].p,p)):
-				flag=True
-				break
-	return flag
+	def ifChangeC(n,p):
+		flag=False
+		for i in range(nvm[n].length):
+			if(nvm[nvm[n].d[i]].p!=-1):
+				if(not ifConnect(nvm[nvm[n].d[i]].p,p)):
+					flag=True
+					break
+		return flag
 
 
 
 
-countC=0
-c=0
-for i in range(NVM_NUMBER):
+	countC=0
 	c=0
-	for j in range(pmLength):
-		c=c+1
-		if(pmList[j].load+nvm[i].u<1):
-			if(not ifChangeC(i,j)):
-				nvm[i].p=j
-				pmList[j].load=pmList[j].load+nvm[i].u
-				c=c-1
-				break
-	if(c==pmLength):
-		countC=countC+4
-		print("connect state changed")
-		#for j in range(pmLength):
-			#if(pmList[j].load+nvm[i].u<1):
-				#nvm[i].p=j
-				#change C
+	for i in range(NVM_NUMBER):
+		c=0
+		for j in range(pmLength):
+			c=c+1
+			if(pmList[j].load+nvm[i].u<1):
+				if(not ifChangeC(i,j)):
+					nvm[i].p=j
+					pmList[j].load=pmList[j].load+nvm[i].u
+					c=c-1
+					break
+		if(c==pmLength):
+			countC=countC+4
+			print("connect state changed")
+			#for j in range(pmLength):
+				#if(pmList[j].load+nvm[i].u<1):
+					#nvm[i].p=j
+					#change C
 
 
-
-print('countC is ', countC)
+	f.write(str(countC))
+	f.write("\n")
+	print('countC is ', countC)
 
 
 
@@ -298,6 +301,6 @@ originData.index = pd.Index(sm.tsa.datetools.dates_from_range('2001','2020'))
 plt.plot(originData)
 plt.show()
 '''
-
+f.close()
 end=time.time()
 print("run time",end-start)
