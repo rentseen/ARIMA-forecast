@@ -87,6 +87,7 @@ class PM:
 		return self.load < other.load
 	def compLoad(self):
 		self.load=self.predict()
+		#self.load=random.random()
 	
 	def predict(self):
 		result=0
@@ -141,7 +142,7 @@ p=PM()
 print(p.predict())
 '''
 
-for i in range(80):
+for i in range(100):
 	#Init rack
 
 	rack=[]
@@ -270,15 +271,23 @@ for i in range(80):
 					c=c-1
 					break
 		if(c==pmLength):
-			countC=countC+4
+			countC=countC+2
 			print("connect state changed")
 			#for j in range(pmLength):
 				#if(pmList[j].load+nvm[i].u<1):
 					#nvm[i].p=j
 					#change C
 
+	pmList.sort()
+	low=pmList[0].load
+	high=pmList[pmLength-1].load
+
 
 	f.write(str(countC))
+	f.write('\t')
+	f.write(str(low))
+	f.write('\t')
+	f.write(str(high))
 	f.write("\n")
 	print('countC is ', countC)
 
