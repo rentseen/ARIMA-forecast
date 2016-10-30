@@ -1,15 +1,6 @@
 from __future__ import print_function
-import pandas as pd
-import numpy as np
-from scipy import  stats
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-from statsmodels.graphics.api import qqplot
-from matplotlib.pylab import rcParams
-from statsmodels.tsa.arima_model import ARIMA
 import random
 import math
-from operator import attrgetter
 import time
 
 start=time.time()
@@ -23,29 +14,7 @@ SLICE_NUMBER=20
 RAND_RANGE=0.6
 P=3
 Q=1
-f=open("CAVMP_result.txt","w")
-
-def arimaPredict(originData):
-	p=P
-	q=Q
-	#log
-	logData=np.log(originData)
-	predictData=[-1]
-	#arima fit
-	for i in range(p+1):
-		for j in range(q+1):
-			try:
-				model = ARIMA(logData, order=(i, 0, j))
-				resultsARIMA = model.fit(disp=-1)
-				#predict
-				predictData=resultsARIMA.predict(len(originData), len(originData), dynamic=True)
-				#print(predictData)
-				predictData=np.exp(predictData)
-			except:
-				continue
-	if(predictData[0]==-1):
-		print('bingo')
-	return predictData[0]
+f=open("CAstatic_result.txt","w")
 
 def generateU():
 	#random
@@ -63,8 +32,8 @@ class VM:
 		self.u=generateU()
 		self.length=len(self.u)
 
-	def predict(self):
-		return arimaPredict(self.u)
+	def getLoad(self):
+		return self.u[self.length-1]
 
 	def addOneU(self,x):
 		self.u.append(x)
@@ -80,23 +49,20 @@ class PM:
 		self.vm=[]
 		self.father=x
 		self.load=-1
-		self.num=-1
 		for i in range(self.length):
 			v=VM()
 			self.vm.append(v)
 	def __lt__(self, other):
 		return self.load < other.load
 	def compLoad(self):
-		self.load=self.predict()
-		#self.load=random.random()
-	
-	def predict(self):
 		result=0
 		for i in range(self.length):
-			result=result+self.vm[i].predict()
+			result=result+self.vm[i].getLoad()
 		if(result>1):
 			result=1
-		return result
+		self.load=result
+		#self.load=random.random()
+		
 
 	def printU(self):
 		for i in range(self.length):
@@ -123,29 +89,15 @@ class NVM:
 		self.p=-1
 		self.length=0
 	def __lt__(self, other):
-         return self.u < other.u
+		return self.u < other.u
 	def addD(self,x):
 		self.d.append(x)
 		self.length=self.length+1
 	def printD(self):
 		print(self.d)
 
-#test p,q
-'''
-d=generateU()
-x=arimaPredict(d)
-d.append(x)
-print(x)
-plt.plot(d,color='red')
-plt.show()
-'''
 
-'''
-p=PM()
-print(p.predict())
-'''
-
-for i in range(1):
+for i in range(100):
 	#Init rack
 
 	rack=[]
@@ -187,8 +139,6 @@ for i in range(1):
 	for i in range(NVM_NUMBER):
 		tmp=NVM()
 		nvm.append(tmp)
-	#Sort by u
-	nvm.sort(reverse=True)
 	'''
 	for i in range(NVM_NUMBER):
 		print(nvm[i].u)
@@ -222,23 +172,36 @@ for i in range(1):
 				if(i==j):
 					continue
 				nvm[g[i]].addD(g[j])
-
+	'''
+	for i in range(NVM_NUMBER):
+		print(nvm[i].d)
+	'''
 
 	pmList=[]
 	for i in range(64):
 		if(i%10==0):
-			print('i= ',i)
+			pass
+			#print('i= ',i)
 		for j in range(rack[i].length):
 			pmList.append(rack[i].pm[j])
 			rack[i].pm[j].compLoad()
 
-	pmList.sort()
 	pmLength=len(pmList)
-	for i in range(pmLength):
-		pmList[i].num=i
 
 	'''
-	for i in range(len(pmList)):
+	pmList.sort()
+	low=pmList[0].load
+	high=pmList[pmLength-1].load
+
+
+
+	f.write(str(low))
+	f.write('\t')
+	f.write(str(high))
+	f.write("\n")
+	'''
+	'''
+	for i in range(10):
 		print(pmList[i].load)
 	'''
 
@@ -253,17 +216,13 @@ for i in range(1):
 
 	def ifChangeC(n,p):
 		flag=False
-		pos=-1
 		for i in range(nvm[n].length):
 			if(nvm[nvm[n].d[i]].p!=-1):
-				for k in range(pmLength):
-					if(pmList[k].num==nvm[nvm[n].d[i]].p):
-						pos=k
-						break
-				if(not ifConnect(pos,p)):
+				if(not ifConnect(nvm[nvm[n].d[i]].p,p)):
 					flag=True
 					break
 		return flag
+
 
 	countC=0
 	c=0
@@ -273,18 +232,19 @@ for i in range(1):
 			c=c+1
 			if(pmList[j].load+nvm[i].u<1):
 				if(not ifChangeC(i,j)):
-					nvm[i].p=pmList[j].num
+					nvm[i].p=j
 					pmList[j].load=pmList[j].load+nvm[i].u
-					pmList.sort()
 					c=c-1
 					break
 		if(c==pmLength):
 			countC=countC+2
-			print("connect state changed")
 			for j in range(pmLength):
 				if(pmList[j].load+nvm[i].u<1):
 					pmList[j].load=pmList[j].load+nvm[i].u
 					break
+
+		
+			#print("connect state changed")
 			#for j in range(pmLength):
 				#if(pmList[j].load+nvm[i].u<1):
 					#nvm[i].p=j
@@ -304,12 +264,11 @@ for i in range(1):
 	f.write('\t')
 	f.write(str(low))
 	f.write('\t')
-	f.write(str(evg))
-	f.write("\t")
 	f.write(str(high))
+	f.write("\t")
+	f.write(str(evg))
 	f.write("\n")
 	print('countC is ', countC)
-
 
 
 #Test nvm

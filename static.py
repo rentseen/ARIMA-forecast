@@ -8,13 +8,13 @@ start=time.time()
 
 VM_RANGE=15
 PM_NUMBER=20
-NVM_NUMBER=1000
+NVM_NUMBER=900
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
 P=3
 Q=1
-f=open("staticResult.txt","w")
+f=open("static_result.txt","w")
 
 def generateU():
 	#random
@@ -58,6 +58,8 @@ class PM:
 		result=0
 		for i in range(self.length):
 			result=result+self.vm[i].getLoad()
+		if(result>1):
+			result=1
 		self.load=result
 		#self.load=random.random()
 		
@@ -87,7 +89,7 @@ class NVM:
 		self.p=-1
 		self.length=0
 	def __lt__(self, other):
-         return self.u < other.u
+		return self.u < other.u
 	def addD(self,x):
 		self.d.append(x)
 		self.length=self.length+1
@@ -95,7 +97,7 @@ class NVM:
 		print(self.d)
 
 
-for i in range(1):
+for i in range(100):
 	#Init rack
 
 	rack=[]
@@ -178,13 +180,26 @@ for i in range(1):
 	pmList=[]
 	for i in range(64):
 		if(i%10==0):
-			print('i= ',i)
+			pass
+			#print('i= ',i)
 		for j in range(rack[i].length):
 			pmList.append(rack[i].pm[j])
 			rack[i].pm[j].compLoad()
 
 	pmLength=len(pmList)
 
+	'''
+	pmList.sort()
+	low=pmList[0].load
+	high=pmList[pmLength-1].load
+
+
+
+	f.write(str(low))
+	f.write('\t')
+	f.write(str(high))
+	f.write("\n")
+	'''
 	'''
 	for i in range(10):
 		print(pmList[i].load)
@@ -209,8 +224,6 @@ for i in range(1):
 		return flag
 
 
-
-
 	countC=0
 	c=0
 	for i in range(NVM_NUMBER):
@@ -229,6 +242,7 @@ for i in range(1):
 					
 		if(c==pmLength):
 			print("full")
+			pass
 			#for j in range(pmLength):
 				#if(pmList[j].load+nvm[i].u<1):
 					#nvm[i].p=j
@@ -238,15 +252,21 @@ for i in range(1):
 	low=pmList[0].load
 	high=pmList[pmLength-1].load
 
+	sumU=0
+	for i in range(pmLength):
+		sumU=sumU+pmList[i].load
+	evg=float(sumU)/pmLength
+
 
 	f.write(str(countC))
 	f.write('\t')
 	f.write(str(low))
 	f.write('\t')
 	f.write(str(high))
+	f.write("\t")
+	f.write(str(evg))
 	f.write("\n")
 	print('countC is ', countC)
-
 
 
 #Test nvm
