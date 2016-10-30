@@ -21,8 +21,8 @@ NVM_NUMBER=900
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
-P=3
-Q=1
+P=4
+Q=2
 f=open("CAVMP_result.txt","w")
 
 def arimaPredict(originData):
@@ -32,8 +32,11 @@ def arimaPredict(originData):
 	logData=np.log(originData)
 	predictData=[-1]
 	#arima fit
-	for i in range(p+1):
-		for j in range(q+1):
+	flag=False
+	for i in range(p,-1,-1):
+		if(flag):
+			break
+		for j in range(q,-1,-1):
 			try:
 				model = ARIMA(logData, order=(i, 0, j))
 				resultsARIMA = model.fit(disp=-1)
@@ -41,8 +44,11 @@ def arimaPredict(originData):
 				predictData=resultsARIMA.predict(len(originData), len(originData), dynamic=True)
 				#print(predictData)
 				predictData=np.exp(predictData)
+				flag=True
+				break
 			except:
 				continue
+	
 	if(predictData[0]==-1):
 		print('bingo')
 	return predictData[0]
