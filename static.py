@@ -1,15 +1,6 @@
 from __future__ import print_function
-import pandas as pd
-import numpy as np
-from scipy import  stats
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-from statsmodels.graphics.api import qqplot
-from matplotlib.pylab import rcParams
-from statsmodels.tsa.arima_model import ARIMA
 import random
 import math
-from operator import attrgetter
 import time
 
 start=time.time()
@@ -18,34 +9,12 @@ start=time.time()
 VM_RANGE=15
 PM_NUMBER=20
 NVM_NUMBER=1000
-U_MEAN=0.059
+U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
 P=3
 Q=1
-f=open("result.txt","w")
-
-def arimaPredict(originData):
-	p=P
-	q=Q
-	#log
-	logData=np.log(originData)
-	predictData=[-1]
-	#arima fit
-	for i in range(p):
-		for j in range(q):
-			try:
-				model = ARIMA(logData, order=(i, 0, j))
-				resultsARIMA = model.fit(disp=-1)
-				#predict
-				predictData=resultsARIMA.predict(len(originData), len(originData), dynamic=True)
-				#print(predictData)
-				predictData=np.exp(predictData)
-			except:
-				continue
-	if(predictData[0]==-1):
-		print('bingo')
-	return predictData[0]
+f=open("staticResult.txt","w")
 
 def generateU():
 	#random
@@ -63,8 +32,8 @@ class VM:
 		self.u=generateU()
 		self.length=len(self.u)
 
-	def predict(self):
-		return arimaPredict(self.u)
+	def getLoad(self):
+		return self.u[self.length-1]
 
 	def addOneU(self,x):
 		self.u.append(x)
@@ -86,14 +55,12 @@ class PM:
 	def __lt__(self, other):
 		return self.load < other.load
 	def compLoad(self):
-		self.load=self.predict()
-		#self.load=random.random()
-	
-	def predict(self):
 		result=0
 		for i in range(self.length):
-			result=result+self.vm[i].predict()
-		return result
+			result=result+self.vm[i].getLoad()
+		self.load=result
+		#self.load=random.random()
+		
 
 	def printU(self):
 		for i in range(self.length):
@@ -127,22 +94,8 @@ class NVM:
 	def printD(self):
 		print(self.d)
 
-#test p,q
-'''
-d=generateU()
-x=arimaPredict(d)
-d.append(x)
-print(x)
-plt.plot(d,color='red')
-plt.show()
-'''
 
-'''
-p=PM()
-print(p.predict())
-'''
-
-for i in range(100):
+for i in range(1):
 	#Init rack
 
 	rack=[]
@@ -184,8 +137,6 @@ for i in range(100):
 	for i in range(NVM_NUMBER):
 		tmp=NVM()
 		nvm.append(tmp)
-	#Sort by u
-	nvm.sort(reverse=True)
 	'''
 	for i in range(NVM_NUMBER):
 		print(nvm[i].u)
@@ -219,7 +170,10 @@ for i in range(100):
 				if(i==j):
 					continue
 				nvm[g[i]].addD(g[j])
-
+	'''
+	for i in range(NVM_NUMBER):
+		print(nvm[i].d)
+	'''
 
 	pmList=[]
 	for i in range(64):
@@ -229,11 +183,10 @@ for i in range(100):
 			pmList.append(rack[i].pm[j])
 			rack[i].pm[j].compLoad()
 
-	pmList.sort()
 	pmLength=len(pmList)
 
 	'''
-	for i in range(len(pmList)):
+	for i in range(10):
 		print(pmList[i].load)
 	'''
 
@@ -265,14 +218,17 @@ for i in range(100):
 		for j in range(pmLength):
 			c=c+1
 			if(pmList[j].load+nvm[i].u<1):
-				if(not ifChangeC(i,j)):
-					nvm[i].p=j
-					pmList[j].load=pmList[j].load+nvm[i].u
+				nvm[i].p=j
+				pmList[j].load=pmList[j].load+nvm[i].u
+				if(ifChangeC(i,j)):
+					countC=countC+2
+					#print("connect state changed")
 					c=c-1
-					break
+				break
+				
+					
 		if(c==pmLength):
-			countC=countC+2
-			print("connect state changed")
+			print("full")
 			#for j in range(pmLength):
 				#if(pmList[j].load+nvm[i].u<1):
 					#nvm[i].p=j
