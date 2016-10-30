@@ -21,8 +21,8 @@ NVM_NUMBER=900
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
-P=4
-Q=2
+P=3
+Q=1
 f=open("CAVMP_result.txt","w")
 
 def arimaPredict(originData):
@@ -151,7 +151,7 @@ p=PM()
 print(p.predict())
 '''
 
-for i in range(1):
+for i in range(10):
 	#Init rack
 
 	rack=[]
