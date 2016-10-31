@@ -44,6 +44,9 @@ def arimaPredict(originData):
 				predictData=resultsARIMA.predict(len(originData), len(originData), dynamic=True)
 				#print(predictData)
 				predictData=np.exp(predictData)
+				if(math.isnan(predictData[0])):
+					#print("----------------------")
+					continue
 				flag=True
 				break
 			except:
@@ -51,6 +54,7 @@ def arimaPredict(originData):
 	
 	if(predictData[0]==-1):
 		print('bingo')
+	print(predictData[0])
 	return predictData[0]
 
 def generateU():
