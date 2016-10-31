@@ -17,7 +17,7 @@ start=time.time()
 
 VM_RANGE=15
 PM_NUMBER=20
-NVM_NUMBER=900
+NVM_NUMBER=600
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
@@ -54,7 +54,7 @@ def arimaPredict(originData):
 	
 	if(predictData[0]==-1):
 		print('bingo')
-	print(predictData[0])
+	#print(predictData[0])
 	return predictData[0]
 
 def generateU():
@@ -155,7 +155,7 @@ p=PM()
 print(p.predict())
 '''
 
-for i in range(10):
+for i in range(5):
 	#Init rack
 
 	rack=[]
@@ -318,6 +318,12 @@ for i in range(10):
 	f.write("\t")
 	f.write(str(high))
 	f.write("\n")
+
+	print(str(countC))
+	print(str(low))
+	print(str(evg))
+	print(str(high))
+
 	print('countC is ', countC)
 
 
