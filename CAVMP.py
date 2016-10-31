@@ -23,7 +23,7 @@ SLICE_NUMBER=20
 RAND_RANGE=0.6
 P=3
 Q=1
-f=open("CAVMP_result.txt","w")
+f=open("CAVMP_result2.txt","w")
 
 def arimaPredict(originData):
 	p=P
@@ -55,7 +55,7 @@ def arimaPredict(originData):
 	if(predictData[0]==-1):
 		print('bingo')
 	#print(predictData[0])
-	return predictData[0]
+	return predictData[0]+0.007
 
 def generateU():
 	#random
@@ -155,7 +155,7 @@ p=PM()
 print(p.predict())
 '''
 
-for i in range(5):
+for i in range(1):
 	#Init rack
 
 	rack=[]
