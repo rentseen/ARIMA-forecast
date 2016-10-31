@@ -55,7 +55,7 @@ def arimaPredict(originData):
 	if(predictData[0]==-1):
 		print('bingo')
 	#print(predictData[0])
-	return predictData[0]+0.007
+	return predictData[0]+0.008
 
 def generateU():
 	#random
@@ -155,7 +155,7 @@ p=PM()
 print(p.predict())
 '''
 
-for i in range(1):
+for i in range(15):
 	#Init rack
 
 	rack=[]
