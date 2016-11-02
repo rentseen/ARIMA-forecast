@@ -58,10 +58,66 @@ out.close()
 plt.plot(m,n)
 plt.show()
 '''
+import re
+import matplotlib.pyplot as plt
+import math
 f1=open("C-CDF-static.txt","r")
 f2=open("C-CDF-CAVMP.txt","r")
 f3=open("C-CDF-CAstatic.txt","r")
 
+o1=open("CDF-static.txt","w")
+o2=open("CDF-CAVMP.txt","w")
+o3=open("CDF-CAstatic.txt","w")
+
 x1=f1.read()
-x1=x1.split('\n')
-y1=x1[:100]
+x1=re.split('\n|\t',x1)
+x1.pop()
+
+x2=f2.read()
+x2=re.split('\n|\t',x2)
+x2.pop()
+
+x3=f3.read()
+x3=re.split('\n|\t',x3)
+x3.pop()
+
+
+p1_x=[]
+p1_y=[]
+p2_x=[]
+p2_y=[]
+p3_x=[]
+p3_y=[]
+
+for i in range(0,len(x1),2):
+	p1_x.append(float(x1[i])/500)
+	p1_y.append(float(x1[i+1]))
+
+for i in range(0,len(x2),2):
+	p2_x.append(float(x2[i])/500)
+	p2_y.append(float(x2[i+1]))
+
+for i in range(0,len(x3),2):
+	p3_x.append(float(x3[i])/500)
+	p3_y.append(float(x3[i+1]))
+
+for i in range(len(p1_x)):
+	o1.write(str(p1_x[i]))
+	o1.write('\t')
+	o1.write(str(p1_y[i]))
+	o1.write('\n')
+
+for i in range(len(p2_x)):
+	o2.write(str(p2_x[i]))
+	o2.write('\t')
+	o2.write(str(p2_y[i]))
+	o2.write('\n')
+for i in range(len(p3_x)):
+	o3.write(str(p3_x[i]))
+	o3.write('\t')
+	o3.write(str(p3_y[i]))
+	o3.write('\n')
+
+plt.plot(p1_x,p1_y,p2_x,p2_y,p3_x,p3_y)
+plt.ylim(0,1.1)
+plt.show()
