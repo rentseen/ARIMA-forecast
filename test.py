@@ -123,6 +123,7 @@ plt.plot(p1_x,p1_y,p2_x,p2_y,p3_x,p3_y)
 plt.ylim(0,1.1)
 plt.show()
 '''
+'''
 import re
 import matplotlib.pyplot as plt
 import math
@@ -214,3 +215,65 @@ o3.write(str(p3_h_a))
 o3.write("\t")
 o3.write(str(p3_a_a))
 o3.write("\n")
+'''
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+N=3
+
+aveCAVMPMeans=[0.946601801623,0.947113559077,0.948454096069]
+lowCAVMPMeans=[0.810084820106,0.767802605805,0.76494951005]
+highCAVMPMeans=[1.0,1.0,1.0]
+
+stdCAVMP=[]
+tmp1=[]
+tmp2=[]
+for i in range(3):
+	tmp1.append(aveCAVMPMeans[i]-lowCAVMPMeans[i])
+	tmp2.append(highCAVMPMeans[i]-aveCAVMPMeans[i])
+stdCAVMP.append(tmp1)
+stdCAVMP.append(tmp2)
+
+aveCAstaticMeans=[0.955477854026,0.953211106968,0.953266175663]
+lowCAstaticMeans=[0.616405792127,0.515454403091,0.435178540951]
+highCAstaticMeans=[1.0,1.0,1.0]
+
+stdCAstatic=[]
+tmp1=[]
+tmp2=[]
+for i in range(3):
+	tmp1.append(aveCAstaticMeans[i]-lowCAstaticMeans[i])
+	tmp2.append(highCAstaticMeans[i]-aveCAstaticMeans[i])
+stdCAstatic.append(tmp1)
+stdCAstatic.append(tmp2)
+
+avestaticMeans=[0.953938547729,0.952260320505,0.95265016232]
+lowstaticMeans=[0.615834126982,0.515247980872,0.436673392773]
+highstaticMeans=[1.0,1.0,1.0]
+
+stdStatic=[]
+tmp1=[]
+tmp2=[]
+for i in range(3):
+	tmp1.append(avestaticMeans[i]-lowstaticMeans[i])
+	tmp2.append(highstaticMeans[i]-avestaticMeans[i])
+stdStatic.append(tmp1)
+stdStatic.append(tmp2)
+
+ind = np.arange(N)
+width = 0.2
+
+p1 = plt.bar(ind+0.2, aveCAVMPMeans, width, color='r', yerr=stdCAVMP)
+p2 = plt.bar(ind+0.4, aveCAstaticMeans, width, color='b', yerr=stdCAstatic)
+p3 = plt.bar(ind+0.6, avestaticMeans, width, color='g', yerr=stdStatic)
+
+
+plt.ylabel('Utilization')
+plt.xlabel('Scale of Cloud /racks')
+plt.title('Load balance')
+plt.xticks(ind + width/2+0.4, ('2x2', '4x4', '8x8'))
+plt.yticks((0,0.2,0.4,0.6,0.8,1.0,1.2,1.4))
+plt.legend((p1[0], p2[0], p3[0]), ('CAVMP', 'CAstatic','static'))
+
+plt.show()
