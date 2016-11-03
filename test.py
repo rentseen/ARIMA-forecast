@@ -127,13 +127,13 @@ import re
 import matplotlib.pyplot as plt
 import math
 
-f1=open("static-result.txt","r")
-f2=open("CAVMP-result.txt","r")
-f3=open("CAstatic-result.txt","r")
+f1=open("static_result_4_4.txt","r")
+f2=open("CAVMP_result_4_4.txt","r")
+f3=open("CAstatic_result_4_4.txt","r")
 
-o1=open("u-static.txt","w")
-o2=open("u-CAVMP.txt","w")
-o3=open("u-CAstatic.txt","w")
+o1=open("u-static-4-4.txt","w")
+o2=open("u-CAVMP-4-4.txt","w")
+o3=open("u-CAstatic-4-4.txt","w")
 
 x1=f1.read()
 x1=re.split('\n|\t',x1)

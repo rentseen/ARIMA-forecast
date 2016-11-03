@@ -8,13 +8,14 @@ start=time.time()
 
 VM_RANGE=15
 PM_NUMBER=20
-NVM_NUMBER=600
+NVM_NUMBER=38
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
+RACK_NUMBER=4
 P=3
 Q=1
-f=open("CAstatic_result.txt","w")
+f=open("CAstatic_result_2_2.txt","w")
 
 def generateU():
 	#random
@@ -62,7 +63,7 @@ class PM:
 			result=1
 		self.load=result
 		#self.load=random.random()
-		
+
 
 	def printU(self):
 		for i in range(self.length):
@@ -101,28 +102,28 @@ for i in range(100):
 	#Init rack
 
 	rack=[]
-	for i in range(64):
+	for i in range(RACK_NUMBER):
 		tmp=Rack(i)
 		rack.append(tmp)
 	#rack[0].printU()
 
 	#Init C
 	C=[]
-	for i in range(64):
+	for i in range(RACK_NUMBER):
 		c=[]
-		for j in range(64):
+		for j in range(RACK_NUMBER):
 			c.append(0)
 		C.append(c)
 
 	flag=[]
-	for i in range(64):
+	for i in range(RACK_NUMBER):
 		flag.append(False)
 
-	for i in range(64):
+	for i in range(RACK_NUMBER):
 		if(flag[i]==False):
 			flag[i]=True
 			while(True):
-				tmp=random.randrange(0,64)
+				tmp=random.randrange(0,RACK_NUMBER)
 				if(flag[tmp]==False):
 					flag[tmp]=True
 					C[i][tmp]=1
@@ -178,7 +179,7 @@ for i in range(100):
 	'''
 
 	pmList=[]
-	for i in range(64):
+	for i in range(RACK_NUMBER):
 		if(i%10==0):
 			pass
 			#print('i= ',i)
@@ -243,7 +244,7 @@ for i in range(100):
 					pmList[j].load=pmList[j].load+nvm[i].u
 					break
 
-		
+
 			#print("connect state changed")
 			#for j in range(pmLength):
 				#if(pmList[j].load+nvm[i].u<1):

@@ -17,14 +17,14 @@ start=time.time()
 
 VM_RANGE=15
 PM_NUMBER=20
-NVM_NUMBER=38
+NVM_NUMBER=150
 U_MEAN=0.06111
 SLICE_NUMBER=20
 RAND_RANGE=0.6
-RACK_NUMBER=4
+RACK_NUMBER=16
 P=3
 Q=1
-f=open("CAVMP_result_2_2.txt","w")
+f=open("CAVMP_result_4_4_8.txt","w")
 
 def arimaPredict(originData):
 	p=P
@@ -157,7 +157,7 @@ print(p.predict())
 '''
 
 
-for i in range(1):
+for i in range(10):
 	#Init rack
 
 	rack=[]
